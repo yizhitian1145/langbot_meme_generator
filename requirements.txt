@@ -1,0 +1,5 @@
+httpx==0.24.1  # 或其他合适的版本
+meme_generator
+beautifulsoup4
+requests
+Pillow>=9.0.0  # 或其他合适的版本
