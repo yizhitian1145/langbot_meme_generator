@@ -6,9 +6,8 @@ langbot_meme_generator是基于[meme_generator](https://github.com/MeetWq/meme-g
 
 此项目的代码为AI编写，可能会有一些问题，如有报错请带着完整的截图的日志发到issues中，我有时间会看的。
 
+# 食用方法
 
-
-
-
-
-
+```
+!plugin get https://github.com/yizhitian1145/langbot_meme_generator.git
+```
