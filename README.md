@@ -9,5 +9,5 @@ langbot_meme_generator是基于[meme_generator](https://github.com/MeetWq/meme-g
 # 食用方法
 
 ```
-!plugin get https://github.com/yizhitian1145/langbot_meme_generator.git
+!plugin get https://github.com/yizhitian1145/langbot_meme_generator
 ```
