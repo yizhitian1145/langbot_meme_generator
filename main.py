@@ -23,16 +23,15 @@ class MemeGeneratorPlugin(BasePlugin):
         resource_dir = os.path.expanduser("~/.config/meme_generator/resources")
         if not os.path.exists(resource_dir):
             try:
-                from meme_generator.download import download_resource
+                from meme_generator.download import main as download_resource
                 self.ap.logger.info("正在下载 meme_generator 资源文件...")
-                await asyncio.to_thread(download_resource)
+                await asyncio.to_thread(download_resource)  # 使用 asyncio.to_thread
                 self.ap.logger.info("meme_generator 资源文件下载完成。")
             except Exception as e:
                 self.ap.logger.error(f"下载 meme_generator 资源文件失败: {e}")
                 return False
 
         return True
-
 
     @handler(PersonNormalMessageReceived)
     async def person_normal_message_received(self, ctx: EventContext):
@@ -68,7 +67,6 @@ class MemeGeneratorPlugin(BasePlugin):
                     self.ap.logger.error(f"生成表情包超时")
                     ctx.add_return("reply", f"生成表情包超时")
                     ctx.prevent_default()
-
 
             except Exception as e:
                 self.ap.logger.error(f"处理消息时出错: {e}")
