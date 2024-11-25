@@ -26,35 +26,17 @@ class MemeGeneratorPlugin(BasePlugin):
 
         return True
 
-    @llm_func(
-        name="generate_meme",
-        description={
-            "name": "generate_meme",
-            "description": "生成表情包图片",
-            "parameters": {
-                "type": "object",
-                "properties": {
-                    "meme_name": {
-                        "type": "string",
-                        "description": "表情包模板名称，例如 'petpet'、'nokia' 等"
-                    },
-                    "texts": {
-                        "type": "array",
-                        "description": "要放在表情包上的文字列表，按模板顺序排列",
-                        "items": {"type": "string"}
-                    },
-                    "args": {
-                        "type": "object",
-                        "description": "生成表情包的其他参数，具体取决于模板类型",
-                        "optional": True
-                    }
-                },
-                "required": ["meme_name", "texts"]
-            }
-        }
-    )
+    @llm_func("generate_meme")
     async def generate_meme(self, meme_name: str, texts: list, args: dict = None):
-        """生成表情包图片"""
+        """生成表情包图片。
+
+        meme_name (str): 表情包模板名称，例如 'petpet'、'nokia' 等。
+        texts (list): 要放在表情包上的文字列表，按模板顺序排列。
+        args (dict, optional): 生成表情包的其他参数，具体取决于模板类型。默认为 None。
+
+        Returns:
+            str: 生成的表情包图片URL。
+        """
         url = self.meme_api + meme_name + "/"
 
         data = {"texts": texts}
