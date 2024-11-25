@@ -11,45 +11,36 @@ class MemeGeneratorPlugin(BasePlugin):
 
     def __init__(self, host: APIHost):
         self.host = host
-        self.meme_api = "http://127.0.0.1:2233"
-
+        self.meme_api = "http://127.0.0.1:2233/memes/"
 
     async def initialize(self):
-        # 检查 meme-generator 是否已安装
         try:
             import meme_generator
         except ImportError:
             self.host.logger.error("未安装 meme_generator，请先安装：pip install meme_generator")
             return False
 
-        # 检查 meme-generator 的资源文件是否已下载
         resource_dir = os.path.expanduser("~/.config/meme_generator/resources")
         if not os.path.exists(resource_dir):
             self.host.logger.warning("meme_generator 资源文件未下载，请手动下载或运行 `meme download` 命令下载")
-
-
-        # 启动 meme-generator 的 API 服务 (如果需要)
-        #  这里假设用户已经自行启动了 meme-generator 的 API 服务，
-        #  插件不负责启动服务，避免端口冲突等问题。
-        #  如果需要插件自动启动服务，需要更复杂的逻辑处理。
-
 
         return True
 
     @llm_func(name="generate_meme")
     async def generate_meme(self, meme_name: str, texts: list, args: dict = None):
-        """
-        生成表情包
+        """Generate a meme image using meme-generator.
 
         Args:
-            meme_name (str): 表情包名称
-            texts (list): 表情包文字
-            args (dict, optional):  其他参数. Defaults to None.
+            meme_name (str): The name of the meme template to use.
+                For example: 'petpet', 'nokia', etc.
+            texts (list): List of texts to put on the meme.
+                Each text will be placed in order according to the template.
+            args (dict, optional): Additional arguments for meme generation.
+                Specific to each meme template. Defaults to None.
 
         Returns:
-            str: 生成的表情包图片链接
+            str: URL of the generated meme image.
         """
-
         url = self.meme_api + meme_name + "/"
 
         data = {"texts": texts}
@@ -59,18 +50,16 @@ class MemeGeneratorPlugin(BasePlugin):
         try:
             async with httpx.AsyncClient() as client:
                 resp = await client.post(url, data=data)
-                resp.raise_for_status() # 抛出异常如果请求失败
+                resp.raise_for_status()
 
-            return resp.url # 返回图片链接
+            return resp.url
 
         except httpx.HTTPError as e:
             self.host.logger.error(f"生成表情包失败: {e}")
             return f"生成表情包失败: {e}"
 
-
     @handler(PersonNormalMessageReceived)
     async def person_normal_message_received(self, ctx: EventContext):
-        # 示例：根据用户消息生成表情包
         msg = ctx.event.text_message
         if msg.startswith("生成表情包"):
             try:
@@ -88,4 +77,3 @@ class MemeGeneratorPlugin(BasePlugin):
                 self.host.logger.error(f"处理消息时出错: {e}")
                 ctx.add_return("reply", f"生成表情包失败: {e}")
                 ctx.prevent_default()
-
