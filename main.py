@@ -28,18 +28,14 @@ class MemeGeneratorPlugin(BasePlugin):
 
     @llm_func(name="generate_meme")
     async def generate_meme(self, meme_name: str, texts: list, args: dict = None):
-        """Generate a meme image using meme-generator.
+        """生成表情包图片。
 
-        Args:
-            meme_name (str): The name of the meme template to use.
-                For example: 'petpet', 'nokia', etc.
-            texts (list): List of texts to put on the meme.
-                Each text will be placed in order according to the template.
-            args (dict, optional): Additional arguments for meme generation.
-                Specific to each meme template. Defaults to None.
+        meme_name: 表情包模板名称，例如 'petpet'、'nokia' 等
+        texts: 要放在表情包上的文字列表，按模板顺序排列
+        args: 生成表情包的其他参数，具体取决于模板类型，默认为 None
 
         Returns:
-            str: URL of the generated meme image.
+            生成的表情包图片URL
         """
         url = self.meme_api + meme_name + "/"
 
@@ -77,3 +73,4 @@ class MemeGeneratorPlugin(BasePlugin):
                 self.host.logger.error(f"处理消息时出错: {e}")
                 ctx.add_return("reply", f"生成表情包失败: {e}")
                 ctx.prevent_default()
+
