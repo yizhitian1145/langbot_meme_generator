@@ -11,7 +11,7 @@ class MemeGeneratorPlugin(BasePlugin):
 
     def __init__(self, host: APIHost):
         self.host = host
-        self.meme_api = "http://127.0.0.1:2233/memes/"
+        self.meme_api = "http://127.0.0.1:2233"
 
     async def initialize(self):
         try:
@@ -28,15 +28,17 @@ class MemeGeneratorPlugin(BasePlugin):
 
     @llm_func(name="generate_meme")
     async def generate_meme(self, meme_name: str, texts: list, args: dict = None):
-        """使用 meme-generator 生成表情包图片。
+        """生成表情包图片。
 
-        meme_name: 表情包模板名称，例如 'petpet'、'nokia' 等
-        texts: 要放在表情包上的文字列表，按模板顺序排列
-        args: 生成表情包的其他参数，具体取决于模板类型
+        Args:
+            meme_name (str): 表情包模板名称，例如 'petpet'、'nokia' 等。
+            texts (list): 要放在表情包上的文字列表，按模板顺序排列。
+            args (dict, optional): 生成表情包的其他参数，具体取决于模板类型。默认为 None。
 
-        Returns: 生成的表情包图片URL
+        Returns:
+            str: 生成的表情包图片URL。
         """
-        url = self.meme_api + meme_name + "/"
+        url = self.meme_api + "/memes/" + meme_name + "/"  # 构建正确的 URL
 
         data = {"texts": texts}
         if args:
@@ -44,7 +46,7 @@ class MemeGeneratorPlugin(BasePlugin):
 
         try:
             async with httpx.AsyncClient() as client:
-                resp = await client.post(url, data=data, timeout=30)  # 设置超时时间
+                resp = await client.post(url, data=data, timeout=30)
                 resp.raise_for_status()
 
             return resp.url
@@ -55,7 +57,6 @@ class MemeGeneratorPlugin(BasePlugin):
         except httpx.TimeoutException:
             self.host.logger.error(f"生成表情包超时")
             return f"生成表情包超时"
-
 
     @handler(PersonNormalMessageReceived)
     async def person_normal_message_received(self, ctx: EventContext):
@@ -71,10 +72,9 @@ class MemeGeneratorPlugin(BasePlugin):
                 if image_url:
                     ctx.add_return("reply", MessageChain([Image(url=str(image_url))]))
                     ctx.prevent_default()
-                else:  # 处理 image_url 为 None 或空字符串的情况
+                else:
                     ctx.add_return("reply", "生成表情包失败，请检查参数或网络连接。")
                     ctx.prevent_default()
-
 
             except Exception as e:
                 self.host.logger.error(f"处理消息时出错: {e}")
