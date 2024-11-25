@@ -11,7 +11,7 @@ class MemeGeneratorPlugin(BasePlugin):
 
     def __init__(self, host: APIHost):
         self.host = host
-        self.meme_api = "http://127.0.0.1:2233/memes/"
+        self.meme_api = "http://127.0.0.1:2233"
 
 
     async def initialize(self):
