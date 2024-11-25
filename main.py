@@ -10,19 +10,19 @@ import os
 class MemeGeneratorPlugin(BasePlugin):
 
     def __init__(self, host: APIHost):
-        self.host = host
+        self.host = host  # 保留 self.host 以备将来使用
         self.meme_api = "http://127.0.0.1:2233"
 
     async def initialize(self):
         try:
             import meme_generator
         except ImportError:
-            self.host.logger.error("未安装 meme_generator，请先安装：pip install meme_generator")
+            self.ap.logger.error("未安装 meme_generator，请先安装：pip install meme_generator")  # 使用 self.ap.logger
             return False
 
         resource_dir = os.path.expanduser("~/.config/meme_generator/resources")
         if not os.path.exists(resource_dir):
-            self.host.logger.warning("meme_generator 资源文件未下载，请手动下载或运行 `meme download` 命令下载")
+            self.ap.logger.warning("meme_generator 资源文件未下载，请手动下载或运行 `meme download` 命令下载")  # 使用 self.ap.logger
 
         return True
 
@@ -49,20 +49,21 @@ class MemeGeneratorPlugin(BasePlugin):
                         ctx.add_return("reply", MessageChain([Image(url=str(image_url))]))
                         ctx.prevent_default()
                     else:
+                        self.ap.logger.error("生成表情包失败，URL 为空") # 使用 self.ap.logger 记录错误
                         ctx.add_return("reply", "生成表情包失败，请检查参数或网络连接。")
                         ctx.prevent_default()
 
                 except httpx.HTTPError as e:
-                    self.host.logger.error(f"生成表情包失败: {e}")
+                    self.ap.logger.error(f"生成表情包失败: {e}")  # 使用 self.ap.logger
                     ctx.add_return("reply", f"生成表情包失败: {e}")
                     ctx.prevent_default()
                 except httpx.TimeoutException:
-                    self.host.logger.error(f"生成表情包超时")
+                    self.ap.logger.error(f"生成表情包超时")  # 使用 self.ap.logger
                     ctx.add_return("reply", f"生成表情包超时")
                     ctx.prevent_default()
 
 
             except Exception as e:
-                self.host.logger.error(f"处理消息时出错: {e}")
+                self.ap.logger.error(f"处理消息时出错: {e}")  # 使用 self.ap.logger
                 ctx.add_return("reply", f"生成表情包失败: {e}")
                 ctx.prevent_default()
